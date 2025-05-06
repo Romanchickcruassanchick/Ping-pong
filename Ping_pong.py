@@ -32,24 +32,61 @@ win_height = 500
 window = display.set_mode((win_width, win_height))
 display.set_caption("Ping Pong")
 FPS = 60
-background = transform.scale(image.load('Sahur.jpg'), (win_width, win_height))
+background = transform.scale(image.load('Beach.jfif'), (win_width, win_height))
 clock = time.Clock()
 ball = GameSprite('ball.png',300,200,60,60,4)
-racket1 = Player('Racketka.png',70,200,30,200,5)
-racket2 = Player('Racketka.png',550,200,30,200,5)
+racket1 = Player('Racketka.png',70,200,80,200,10)
+racket2 = Player('Racketka.png',550,200,80,200,10)
 game = True
 finish = False
+speed_x = 10
+speed_y = 10
+count_r = 0
+count_l = 0
+font.init()
+font1 = font.SysFont("Arial", 28)
 
 while game:
     for e in event.get():
         if e.type == QUIT:
             game = False
     if finish != True:
+
         window.blit(background,(0,0))
+
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
         ball.reset()
         racket1.reset()
         racket2.reset()
+
         racket1.update_l()
         racket2.update_r()
+        
+        font_r = font1.render(str(count_r),True,(0,255,0))
+        font_l = font1.render(str(count_l),True,(0,255,0))
+
+        if ball.rect.y > win_height - 50 or ball.rect.y < 0:
+            speed_y *= -1
+
+        if sprite.collide_rect(racket1,ball) or sprite.collide_rect(racket2,ball):
+            speed_x *= -1
+
+        if ball.rect.x < -10:
+            finish = True
+            count_r +=1
+            
+        if ball.rect.x > win_width:
+            finish = True
+            count_l += 1
+            
+        
+        window.blit(font_l,(200,300))
+        window.blit(font_r,(500,300))
         display.update()
+    else:
+        ball.rect.x = 300
+        ball.rect.y = 200
+        finish = False
     clock.tick(FPS)
